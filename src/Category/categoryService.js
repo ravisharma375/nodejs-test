@@ -11,6 +11,7 @@ class categoryService {
 			if (findData) {
 				return false;
 			}
+			
 			const createData = await Category.create(body);
 			if (!createData) {
 				return false;
@@ -22,37 +23,37 @@ class categoryService {
 	}
 	static async editCategory(params, body) {
 		try {
-			const findData = await Category.findOne({
-				where: {
-					categoryId: params.categoryId,
-				},
-			});
-			if (!findData) {
-				return false;
-			}
-			const updateData = await Category.update(
+			const update = await Category.findOneAndUpdate(
+				{ _id: params.categoryId },
 				{ categoryName: body.categoryName },
-				{
-					where: {
-						categoryId: params.categoryId,
-					},
-				},
+				{ new: true },
 			);
-
-			if (updateData[0] == 0) {
+			console.log(update);
+			if (!update) {
 				return false;
 			}
-			return updateData;
+
+			// const updateData = await Category.update(
+			// 	{ categoryName: body.categoryName },
+			// 	{
+			// 		where: {
+			// 			categoryId: params.categoryId,
+			// 		},
+			// 	},
+			// );
+
+			// if (updateData[0] == 0) {
+			// 	return false;
+			// }
+			return update;
 		} catch (err) {
 			throw new Error(err);
 		}
 	}
 	static async deleteCategory(params) {
 		try {
-			const deleteData = await Category.destroy({
-				where: {
-					categoryId: params.categoryId,
-				},
+			const deleteData = await Category.findOneAndDelete({
+				_id: params.categoryId,
 			});
 			if (!deleteData) {
 				return false;
@@ -67,11 +68,10 @@ class categoryService {
 			const { page, size } = params;
 			const limit = size ? +size : 10;
 			const offset = page ? (page - 1) * limit : 0;
-			const getData = await Category.findAll({
-				limit,
-				offset,
-				order: [["updatedAt", "DESC"]],
-			});
+			// limit,
+			// 	offset,
+			// 	order: [["updatedAt", "DESC"]],
+			const getData = await Category.find().limit(limit).skip(offset);
 			if (!getData) {
 				return false;
 			}
@@ -82,9 +82,8 @@ class categoryService {
 	}
 	static async getCategory() {
 		try {
-			const getData = await Category.findAll({
-				order: [["updatedAt", "DESC"]],
-			});
+			// order: [["updatedAt", "DESC"]],
+			const getData = await Category.find();
 			if (!getData) {
 				return false;
 			}

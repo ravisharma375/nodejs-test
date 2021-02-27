@@ -1,4 +1,6 @@
 const Sequelize = require("sequelize");
+const userModel = require("../src/User/userModel");
+const salesModel = require("../src/Sales/salesModel");
 const categoryModel = require("../src/Category/categoryModel");
 const productModel = require("../src/Product/productModel");
 
@@ -9,14 +11,14 @@ const sequelize = new Sequelize(
 	{
 		host: process.env.HOST, //localhost
 		port: process.env.DB_PORT, //DataBase Port No
-		dialect: "mysql", //MYSQL DB
+		dialect: "postgres", //MYSQL DB
 	},
 );
 
 const Category = categoryModel(sequelize, Sequelize);
 const Product = productModel(sequelize, Sequelize);
-
-Product.belongsTo(Category, { foreignKey: 'categoryId' });
+const User = userModel(sequelize, Sequelize);
+const Sales = salesModel(sequelize, Sequelize);
 
 sequelize.authenticate().then((err) => {
 	if (err) {
@@ -32,4 +34,4 @@ sequelize
 	.catch((err) => {
 		console.log(err);
 	});
-module.exports = { Sequelize, Category, Product };
+module.exports = { Sequelize, Category, Product, User, Sales };

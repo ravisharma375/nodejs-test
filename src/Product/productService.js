@@ -10,6 +10,8 @@ class productService {
 			if (findData) {
 				return false;
 			}
+			body.category = body.categoryId;
+			console.log(body);
 			const createData = await Product.create(body);
 			if (!createData) {
 				return false;
@@ -67,17 +69,26 @@ class productService {
 			const { page, size } = params;
 			const limit = size ? +size : 10;
 			const offset = page ? (page - 1) * limit : 0;
-			const getData = await Product.findAll({
-				offset: offset,
-				limit: limit,
-				include: [
-					{
-						model: Category,
-						required: true,
+			// offset: offset,
+			// limit: limit,
+			// include: [
+			// 	{
+			// 		model: Category,
+			// 		required: true,
+			// 	},
+			// ],
+			// order: [["updatedAt", "DESC"]],
+			const getData = await Product.aggregate([
+				{
+					$lookup: {
+						from: "category",
+						localField: "categoryId",
+						foreignField: "_id",
+						as: "Category",
 					},
-				],
-				order: [["updatedAt", "DESC"]],
-			});
+				},
+			]);
+
 			if (!getData) {
 				return false;
 			}
